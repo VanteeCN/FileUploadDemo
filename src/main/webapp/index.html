@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件上传Demo</title>
+    <link rel="stylesheet"  href="css/bootstrap.min.css">
+    <script type="application/javascript" src="js/bootstrap.min.js"></script>
+    <style>
+        #img{
+            width: 100px;
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <img id="img" src="" alt="" class="img-thumbnail img-responsive">
+    <h2>服务器文件上传</h2>
+    <form action="/serverUpload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" onchange="uploadImg(this)">
+        <input type="submit" id="submit">
+    </form>
+    <a href="/serverDownload/3badc9a7099f4a5aa5f5ca58cb9d7e01/jpg">文件下载模拟，真实场景是通过数据库将数据绑定至a标签</a>
+    <hr>
+    <h2>ftp文件上传</h2>
+    <form action="/ftpUpload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" onchange="uploadImg(this)">
+        <input type="submit">
+    </form>
+    <hr>
+    <h2>OSS文件上传</h2>
+    <form action="/aliOSSUpload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" onchange="uploadImg(this)">
+        <input type="submit">
+    </form>
+
+    <script>
+        //选择图片，马上预览
+        function uploadImg(obj) {
+            var file = obj.files[0];
+            //file.size 单位为byte  可以做上传大小控制
+            if(file.size>10485760){
+                alert("最大支持10M的图片！");
+                //大于10M禁止上传，这里只做了一个处理，其他的方法相同。
+                document.getElementById("submit").disabled = "disabled";
+                return;
+            }
+            var reader = new FileReader();
+            //读取文件过程方法
+            reader.onloadstart = function (e) {
+                console.log("开始读取....");
+            }
+            reader.onprogress = function (e) {
+                console.log("正在读取中....");
+            }
+            reader.onabort = function (e) {
+                console.log("中断读取....");
+            }
+            reader.onerror = function (e) {
+                console.log("读取异常....");
+            }
+            reader.onload = function (e) {
+                console.log("成功读取....");
+                var img = document.getElementById("img");
+                img.src = e.target.result;
+                //或者 img.src = this.result;  //e.target == this
+            }
+            reader.readAsDataURL(file)
+        }
+    </script>
+</body>
+</html>
